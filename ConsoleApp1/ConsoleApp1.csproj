@@ -81,6 +81,24 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Sample\1-Input.xlsx" />
+    <None Include="Sample\1-mst_file.xlsx" />
+    <None Include="Sample\1-StatFile.xlsx" />
+    <None Include="Sample\2-Input.xlsx" />
+    <None Include="Sample\2-mst_file.xlsx" />
+    <None Include="Sample\2-StatFile.xlsx" />
+    <None Include="Sample\3-Input.xlsx" />
+    <None Include="Sample\3-mst_file.xlsx" />
+    <None Include="Sample\3-StatFile.xlsx" />
+    <None Include="Sample\4-Input.xlsx" />
+    <None Include="Sample\4-mst_file.xlsx" />
+    <None Include="Sample\4-StatFile.xlsx" />
+    <None Include="Sample\5-Input.xlsx" />
+    <None Include="Sample\5-mst_file.xlsx" />
+    <None Include="Sample\5-StatFile.xlsx" />
+    <None Include="Sample\6-Input.xlsx" />
+    <None Include="Sample\6-mst_file.xlsx" />
+    <None Include="Sample\6-StatFile.xlsx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
