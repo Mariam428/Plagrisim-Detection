@@ -83,6 +83,7 @@
     <None Include="packages.config" />
     <None Include="Sample\1-Input.xlsx" />
     <None Include="Sample\1-mst_file.xlsx" />
+    <None Include="Sample\1-mst_file1.xlsx" />
     <None Include="Sample\1-StatFile.xlsx" />
     <None Include="Sample\2-Input.xlsx" />
     <None Include="Sample\2-mst_file.xlsx" />
