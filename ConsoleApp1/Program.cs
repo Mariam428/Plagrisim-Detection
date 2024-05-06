@@ -157,12 +157,56 @@ namespace ConsoleApp1
 
         static void maxST(Dictionary<KeyValuePair<string, string>, double> graph)
         {
-            var sortedGraph = from entry in graph orderby entry.Value descending select entry;
-
-            foreach (KeyValuePair<KeyValuePair<string, string>, double> kvp in sortedGraph)
+            //var sortedGraph = from entry in graph orderby entry.Value descending select entry;
+            int temp = 1;
+            Dictionary<KeyValuePair<int, int>, double> newgraph= new Dictionary<KeyValuePair<int, int>, double>();
+            Dictionary<string, int> vertices = new Dictionary<string, int>();
+            foreach (KeyValuePair<KeyValuePair<string, string>, double> kvp in graph)
             {
-                Console.WriteLine("Edge: {0}-{1}, Weight: {2}", kvp.Key.Key, kvp.Key.Value, kvp.Value);
+                string[] parts1 = kvp.Key.Key.Split(new string[] { "/" }, StringSplitOptions.None);
+                string key1 = string.Join("/", parts1.Take(3));
+
+                string[] parts2 = kvp.Key.Value.Split(new string[] { "/" }, StringSplitOptions.None);
+                string key2 = string.Join("/", parts2.Take(3));
+                if (!vertices.ContainsKey(key1))
+                {
+                    vertices.Add(key1, temp);
+                    //Console.WriteLine(key1);
+                    temp++;
+                }
+                if (!vertices.ContainsKey(key2))
+                {
+                    vertices.Add(key2,temp);
+                    //Console.WriteLine(key2);
+                    temp++;
+                }
+                //code for making new graph with pairs as number assigned in verytices dictionary 
+                if (vertices.ContainsKey(key1) && vertices.ContainsKey(key2))
+                {
+                    int vertex1 = vertices[key1];
+                    int vertex2 = vertices[key2];
+
+                    KeyValuePair<int, int> newKey = new KeyValuePair<int, int>(vertex1, vertex2);
+                    newgraph.Add(newKey, kvp.Value);
+                }
+                
             }
+            //Console.WriteLine("Vertices:");
+            //foreach (KeyValuePair<string, int> kvp in vertices)
+            //{
+            //    Console.WriteLine("Key: {0}, Value: {1}", kvp.Key, kvp.Value);
+            //}
+
+            //// Print newGraph
+            //Console.WriteLine("\nNew Graph:");
+            //foreach (KeyValuePair<KeyValuePair<int, int>, double> kvp in newgraph)
+            //{
+            //    Console.WriteLine("Key: ({0}, {1}), Value: {2}", kvp.Key.Key, kvp.Key.Value, kvp.Value);
+            //}
+            //foreach (<string,int> kvp in vertices)
+            //{
+            //    Console.WriteLine("Edge: {0}, Weight: {2}", kvp.Key, kvp.Value);
+            //}
         }
 
         static void Main(string[] args)
