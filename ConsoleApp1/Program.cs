@@ -23,39 +23,35 @@ namespace ConsoleApp1
                 // Loop through rows
                 for (int i = worksheet.Dimension.Start.Row; i < worksheet.Dimension.End.Row; i++)
                 {
-                    string fileOneData = worksheet.Cells[i + 1, 1].Value.ToString();
-                    string fileTwoData = worksheet.Cells[i + 1, 2].Value.ToString();
-                    string lineMatchesString = worksheet.Cells[i + 1, 3].Value.ToString();
-                    int lineMatches = int.Parse(worksheet.Cells[i + 1, 3].Value.ToString());
+                    string fileOneData = worksheet.Cells[i+1, 1].Value.ToString();
+                    string fileTwoData = worksheet.Cells[i+1, 2].Value.ToString();
+                    string lineMatches = worksheet.Cells[i+1, 3].Value.ToString();
+                    string[]fileOneParts = fileOneData.Split(new string[] { "/" }, StringSplitOptions.None);
+                    string hyperlink1 = string.Join("/", fileOneParts. Take(4));
+                    string similarity1 = fileOneParts[3].Trim().Replace("(", "").Replace(")", "").Replace("%", ""); // remove brackets
+                    string[] fileTwoParts = fileTwoData.Split(new string[] { "/" }, StringSplitOptions.None);
+                    string hyperlink2 = string.Join("/", fileTwoParts.Take(4));
+                    string similarity2 = fileTwoParts[3].Trim().Replace("(", "").Replace(")", "").Replace("%", ""); // remove brackets
 
-                    string[] fileOneParts = fileOneData.Split(new string[] { "(", ")" }, StringSplitOptions.None);
-                    string hyperlink1 = fileOneParts[0].Trim();
-                    string similarity1 = fileOneParts[1];
-
-                    string[] fileTwoParts = fileTwoData.Split(new string[] { "(", ")" }, StringSplitOptions.None);
-                    string hyperlink2 = fileTwoParts[0].Trim();
-                    string similarity2 = fileTwoParts[1];
-                   
-                    
                     // Create a KeyValuePair for the key
                     key = new KeyValuePair<string, string>(hyperlink1, hyperlink2);
 
-                    valueList = new List<string> { similarity1, similarity2, lineMatchesString};
+                    valueList = new List<string> { similarity1, similarity2, lineMatches};
 
                     // Add the entry to the dictionary
                     myDictionary.Add(key, valueList);
 
-                    //Console.WriteLine($"File one: {hyperlink1}, Similarity: ({similarity1})");
-                    //Console.WriteLine($"File two: {hyperlink2}, Similarity: ({similarity2})");
+                    //Console.WriteLine($"File one: {hyperlink1}, Similarity: {similarity1}");
+                    //Console.WriteLine($"File two: {hyperlink2}, Similarity: {similarity2}");
                     //Console.WriteLine($"Lines matched: {lineMatches}");
                     //Console.WriteLine();
                 }
             }
         }
         
-        static Dictionary<KeyValuePair<string, string>, string> ConstructTheGraph(Dictionary<KeyValuePair<string, string>, List<string>> dictionary)
+        static Dictionary<KeyValuePair<string, string>, double> ConstructTheGraph(Dictionary<KeyValuePair<string, string>, List<string>> dictionary)
         {
-            Dictionary<KeyValuePair<string, string>, string> Graph = new Dictionary<KeyValuePair<string, string>, string>();
+            Dictionary<KeyValuePair<string, string>, double> Graph = new Dictionary<KeyValuePair<string, string>, double>();
             string firstKey;
             string secondKey;
             string value1;
@@ -70,10 +66,17 @@ namespace ConsoleApp1
                 value2 = dictionary[keyValuePair][1];
                 key1 = new KeyValuePair<string, string>(firstKey, secondKey);
                 key2 = new KeyValuePair<string, string>(secondKey, firstKey);
-                Graph.Add(key1, value1);
-                Graph.Add(key2, value2);
+                double Value1 = double.Parse(value1);
+                double Value2 = double.Parse(value2);
+                if (Value1 > Value2)
+                 Graph.Add(key1, Value1);
+                else
+                 Graph.Add(key2, Value2);
             }
-
+            //foreach (KeyValuePair<KeyValuePair<string, string>, double> kvp in Graph)
+            //{
+            //    Console.WriteLine("Key: {0}, {1}, Value: {2}", kvp.Key.Key, kvp.Key.Value, kvp.Value);
+            //}
             return Graph;
         }
         static HashSet<HashSet<string>> GetComponents(Dictionary<KeyValuePair<string, string>, string> graph)
@@ -141,7 +144,7 @@ namespace ConsoleApp1
                         {
                             // Access the weight of the edge
                             string weight = edge.Value;
-                            weight = weight.Replace("%", "");
+                            //weight = weight.Replace("%", "");
                             double w = double.Parse(weight); 
                             total += w;
                             count++;
@@ -152,12 +155,23 @@ namespace ConsoleApp1
             }
         }
 
+        static void maxST(Dictionary<KeyValuePair<string, string>, double> graph)
+        {
+            var sortedGraph = from entry in graph orderby entry.Value descending select entry;
+
+            foreach (KeyValuePair<KeyValuePair<string, string>, double> kvp in sortedGraph)
+            {
+                Console.WriteLine("Edge: {0}-{1}, Weight: {2}", kvp.Key.Key, kvp.Key.Value, kvp.Value);
+            }
+        }
+
         static void Main(string[] args)
         {
-            readFile(@"D:\3rd\Algorithm\Plagrisim-Detection\ConsoleApp1\Sample\6-Input.xlsx");
-            Dictionary<KeyValuePair<string, string>, string> graph;
+            readFile(@"D:\Plagrisim\Plagrisim-Detection\Test Cases\Sample\1-Input.xlsx");
+            Dictionary<KeyValuePair<string, string>, double> graph;
             graph=ConstructTheGraph(myDictionary);
-            calculateStat(graph);
+            maxST(graph);
+            //calculateStat(graph);
         }
     }
 }
