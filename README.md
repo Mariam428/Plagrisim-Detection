@@ -26,3 +26,68 @@ The major task is to read in an excel file containing an N pair of files which e
 1. **Find Groups**: First, we find all groups of files that are similar to each other in some way, making an extensive network of connections. Next, for each group, shows its file IDs and their average matching similarity.
 
 2. **Refine Groups**: In these groups, sometimes things are going in circles - like when A is similar to B, B to C, and C back to A. These circles don't add much value, so we want to get rid of them. To simplify these groups, we only keep the strongest similarities and remove the weaker ones. It's like pruning a tree to keep only the best branches. This step makes sure we focus on the most important similarities.
+
+### Detailed Analysis
+
+#### Metrics Overview
+- **N**: Number of pairs
+- **M**: Number of files
+- **G**: Number of groups
+- **K**: Number of characters of string
+- All declarations are θ(1)
+
+#### 1. Readfile
+- **Read**:
+  - For loop start: #iterations = #rows = N
+  - Reading current row (cell by cell): θ(1)
+  - Parsing lineMatches datatype: θ(K)
+- **Preprocessing data**:
+  - For the 2 files:
+    - Split for extract similarity from fileData: θ(k)
+    - Get hyperlink and similarity from fileparts array: θ(1)
+    - Parsing the two similarities datatype: θ(K)
+  - **Constructing graph**:
+    - Creating tuple: θ(1)
+    - Adding the tuple to ReadGraph: θ(1)
+    - Assign each vertex to a set number initially using .contains function in hashset: θ(1)
+  - For loop end #iterations * O(body): θ(N) * θ(6k) = θ(NK)
+  - **Complexity of read file and constructing graph**: θ(NK)
+
+#### 2. maxST function
+- Sorting the graph in descending order of maximum similarity then by line matches: θ(NlogN)
+- Foreach start loop on sortedReadGraph: #iterations = N = #entries in sortedReadGraph
+  - Calculating sum of similarities: θ(1)
+  - Applying TryGetValue on vertices: θ(1)
+  - Calculate the sum and count for the new vertex: θ(1)
+  - Make object of struct vert: θ(1)
+  - Update vertices with the same set numbers: θ(1)
+  - Foreach start loop on keysIndex: #iterations = M = 2N
+    - Updating average similarity values for vertices that belong to the same set of key1 & key2: θ(1)
+  - Foreach end: θ(2N)
+  - Add edges to the readgraph: θ(1)
+  - Adding data to maxstGraph: θ(1)
+  - Foreach end: θ(NM) = θ((M/2)*M) = θ((M^2)/2) = θ(M^2)
+- Sorting maxstGraph: θ(NlogN)
+- **Complexity of maxst function (implementing Kruskal to implement MST and fills a data structure to be used later to write the MST and stat files)**: θ(2NlogN + M^2) = θ(NlogN + M^2)
+
+#### 3. MSTWrite
+- Make the style of writing hyperlink: θ(1)
+- Foreach start loop on the graph: #iterations = N
+  - Write vertex 1&2 with concatenated value: θ(1)
+- Foreach N * θ(1): θ(N)
+- AutoFitColumns: θ(N)
+- Save: complexity for only one worksheet: θ(N)
+- **Complexity of write MST**: foreach + AutoFitColumns + Save = θ(3N) = θ(N)
+
+#### 4. StatWrite
+- StatDict carry sorting vertices according descending order of average similarity then by number of file string: θ(MlogM)
+- Foreach start loop on statDict: #iterations = M
+  - The first if condition: checks if the current vertex has the same set number as the added vertex in the previous iteration, since vertices are sorted so we need to check on the set number added in the previous iteration (in this case, we don’t add a new row): θ(1)
+  - Else: we create a new row with 4 columns and write the data of the current vertex: θ(1)
+- Foreach end M * θ(1): θ(M)
+- Write the last group of keys to the worksheet: θ(1)
+- AutoFitColumns: rows * columns = no. of groups * 4: θ(G)
+- Save for 1 worksheet: rows * columns = no. of groups * 4: θ(G)
+- **Complexity of write stat**: θ(MlogM + M + 2G)
+
+#### 5. ExtractNumber: θ(K)
